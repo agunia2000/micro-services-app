@@ -1,0 +1,18 @@
+server:
+  port: 9091
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: employeeModule
+          uri: lb://FIRST-SERVICE
+          predicates:
+            - Path=/products/**
