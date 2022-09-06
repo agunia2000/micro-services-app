@@ -11,6 +11,7 @@
     <modules>
         <module>ms-eureka</module>
         <module>ms-apigateway</module>
+        <module>ms-products</module>
     </modules>
 
     <build>
