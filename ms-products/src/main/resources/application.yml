@@ -1,0 +1,22 @@
+server:
+  port: 0
+  error:
+    include-message: always
+spring:
+  application:
+    name: ms-products
+  jpa:
+    database: productsDB
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/
+    username: fkubis
+    password: fkubis
+    driverClassName: org.postgresql.Driver
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
