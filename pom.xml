@@ -9,8 +9,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>ms-eureka</module>
+        <module>ms-products</module>
         <module>ms-apigateway</module>
+        <module>ms-eureka</module>
+        <module>ms-customers</module>
     </modules>
 
     <build>
@@ -26,5 +28,7 @@
             </plugin>
         </plugins>
     </build>
+
+
 
 </project>
