@@ -1,5 +1,5 @@
 server:
-  port: 9091
+  port: 0
   error:
     include-message: always
 
@@ -10,7 +10,7 @@ eureka:
 
 spring:
   application:
-    name: api-gateway
+    name: authorization
 
 jwt:
   secret: agunia
