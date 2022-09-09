@@ -37,4 +37,8 @@ public class ProductController {
         return "Successfully Deleted Product with Id: " + productId;
     }
 
+    @GetMapping("/products/{code}")
+    public ProductResponse getProductByCode(@PathVariable("code") String itemCode){
+        return productService.getProduct(itemCode);
+    }
 }

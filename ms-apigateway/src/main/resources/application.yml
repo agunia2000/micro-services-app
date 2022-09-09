@@ -13,6 +13,6 @@ spring:
     gateway:
       routes:
         - id: employeeModule
-          uri: lb://FIRST-SERVICE
+          uri: lb://MS-PRODUCTS
           predicates:
             - Path=/products/**

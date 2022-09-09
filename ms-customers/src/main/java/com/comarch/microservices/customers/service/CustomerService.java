@@ -5,8 +5,10 @@ import com.comarch.microservices.customers.repository.CustomerRepository;
 import com.comarch.microservices.customers.request.CustomerRequest;
 import com.comarch.microservices.customers.utils.Security;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -31,5 +33,11 @@ public class CustomerService {
 
     public void deleteCustomer(Long id){
         customerRepository.deleteById(id);
+    }
+
+    public boolean customerDataCorrect(String email, String password){
+        Customer customer = customerRepository.findByEmail(email);
+
+        return customer != null && BCrypt.checkpw(password.getBytes(StandardCharsets.UTF_8),customer.getPassword());
     }
 }

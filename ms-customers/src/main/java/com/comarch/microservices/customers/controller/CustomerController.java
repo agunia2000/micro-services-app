@@ -2,6 +2,7 @@ package com.comarch.microservices.customers.controller;
 
 import com.comarch.microservices.customers.model.Customer;
 import com.comarch.microservices.customers.request.CustomerRequest;
+import com.comarch.microservices.customers.request.LoginRequest;
 import com.comarch.microservices.customers.response.CustomerResponse;
 import com.comarch.microservices.customers.service.CustomerService;
 import com.comarch.microservices.customers.utils.Security;
@@ -37,5 +38,13 @@ public class CustomerController {
     public String deleteCustomer(@PathVariable("id") Long customerId){
         customerService.deleteCustomer(customerId);
         return "Successfully Deleted Customer with id: " + customerId;
+    }
+
+    @PostMapping("/customers/login")
+    public String verifyLoginData(@RequestBody LoginRequest request){
+        if(customerService.customerDataCorrect(request.getEmail(), request.getPassword())){
+            return "Correct data!";
+        }
+        return "Invalid Data, Try Again!";
     }
 }
