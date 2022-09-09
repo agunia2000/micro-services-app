@@ -1,5 +1,5 @@
 server:
-  port: 36318
+  port: 0
   error:
     include-message: always
 spring:

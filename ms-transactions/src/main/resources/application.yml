@@ -1,10 +1,10 @@
 server:
-  port: 36318
+  port: 0
   error:
     include-message: always
 spring:
   application:
-    name: ms-products
+    name: ms-transactions
   jpa:
     database: POSTGRESQL
     show-sql: true
@@ -12,7 +12,7 @@ spring:
       ddl-auto: update
   datasource:
     platform: postgres
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5434/postgres
     username: fkubis
     password: fkubis
     driver-class-name: org.postgresql.Driver

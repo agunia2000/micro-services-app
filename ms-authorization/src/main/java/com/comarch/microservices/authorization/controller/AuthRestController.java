@@ -17,6 +17,7 @@ public class AuthRestController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody String userName) {
+        // if user exist in database and password is valid then ....
         String token = jwtUtil.generateToken(userName);
 
         return new ResponseEntity<String>(token, HttpStatus.OK);
@@ -24,7 +25,7 @@ public class AuthRestController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody String userName) {
-        // Persist user to some persistent storage
+        // adding user to DB
         System.out.println("Info saved...");
 
         return new ResponseEntity<String>("Registered", HttpStatus.OK);
