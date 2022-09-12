@@ -1,9 +1,6 @@
 package com.comarch.microservices.transactions.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,7 +16,11 @@ public class TransactionItems {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @NotNull
-    private long transactionId;
-    @NotNull
     private long productId;
+    @ManyToOne
+    private Transaction transaction;
+
+    public TransactionItems(Long productId) {
+        this.productId = productId;
+    }
 }

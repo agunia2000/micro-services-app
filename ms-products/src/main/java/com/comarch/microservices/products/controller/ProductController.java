@@ -16,29 +16,30 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
+
     @PostMapping("/products")
-    public ResponseEntity<ProductResponse> addProduct(@RequestBody ProductRequest request){
+    public ResponseEntity<ProductResponse> addProduct(@RequestBody ProductRequest request) {
 
-        productService.addProduct(request);
-        log.info("New product with code '" + request.getCode() +  "' was added");
+        Long productId = productService.addProduct(request);
+        log.info("New product with code '" + request.getCode() + "' was added");
 
-        return ResponseEntity.ok(new ProductResponse(request.getCode(), request.getName(),
+        return ResponseEntity.ok(new ProductResponse(productId, request.getCode(), request.getName(),
                 request.getDescription(), request.getPrice()));
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(){
+    public ResponseEntity<List<Product>> getProducts() {
         return ResponseEntity.ok(productService.getProducts());
     }
 
     @DeleteMapping("/products/{id}")
-    public String deleteProduct(@PathVariable("id") Long productId){
+    public String deleteProduct(@PathVariable("id") Long productId) {
         productService.deleteProduct(productId);
         return "Successfully Deleted Product with Id: " + productId;
     }
 
     @GetMapping("/products/{code}")
-    public ProductResponse getProductByCode(@PathVariable("code") String itemCode){
-        return productService.getProduct(itemCode);
+    public ProductResponse getProductByCode(@PathVariable("code") String itemCode) {
+        return productService.getProductByCode(itemCode);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    public void addProduct(ProductRequest request){
+    public Long addProduct(ProductRequest request){
         Product product = Product.builder()
                 .code(request.getCode())
                 .name(request.getName())
@@ -21,7 +21,7 @@ public class ProductService {
                 .price(request.getPrice())
                 .build();
 
-        productRepository.save(product);
+        return productRepository.save(product).getId();
     }
 
     public List<Product> getProducts(){
@@ -32,7 +32,8 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ProductResponse getProduct(String code){
+    public ProductResponse getProductByCode(String code){
        return productRepository.findByCode(code);
     }
+
 }
