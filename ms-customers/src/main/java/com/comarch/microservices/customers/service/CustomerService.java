@@ -16,7 +16,7 @@ import java.util.List;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
-    public void addCustomer(CustomerRequest request){
+    public Long addCustomer(CustomerRequest request){
         Customer customer = Customer.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -24,7 +24,7 @@ public class CustomerService {
                 .password(Security.hashPassword(request.getPassword()))
                 .build();
 
-        customerRepository.save(customer);
+        return customerRepository.save(customer).getId();
     }
 
     public List<Customer> getCustomers(){
