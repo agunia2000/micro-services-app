@@ -53,4 +53,9 @@ public class CustomerController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping("/customer/{email}")
+    public Customer getCustomerByEmail(@PathVariable("email") String email){
+        return customerService.getCustomerByEmail(email);
+    }
 }
