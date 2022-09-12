@@ -16,8 +16,8 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("register", r -> r.path("/register").filters(f -> f.filter(filter)).uri("lb://authorization"))
-                .route("login", r -> r.path("/login").filters(f -> f.filter(filter)).uri("lb://authorization"))
+                .route("register", r -> r.path("/register").filters(f -> f.filter(filter)).uri("lb://ms-customers"))
+                .route("login", r -> r.path("/login").filters(f -> f.filter(filter)).uri("lb://ms-customers"))
                 .route("customers", r -> r.path("/customers/**").filters(f -> f.filter(filter)).uri("lb://ms-customers"))
                 .route("products", r -> r.path("/products/**").filters(f -> f.filter(filter)).uri("lb://ms-products"))
                 .route("transactions", r -> r.path("/transactions/**").filters(f -> f.filter(filter)).uri("lb://ms-transactions")).build();
