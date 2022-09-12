@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
         final List<String> apiEndpoints = Arrays.asList("/register", "/login");
 
         Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
-                .noneMatch(uri -> r.getURI().getPath().contains(uri));
+                .noneMatch(uri -> r.getURI().getPath().equals(uri)); // org: contains instead of equals
 
         if (isApiSecured.test(request)) {
             if (!request.getHeaders().containsKey("Authorization")) {
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
                 e.printStackTrace();
 
                 ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.BAD_REQUEST);
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
 
                 return response.setComplete();
             }
