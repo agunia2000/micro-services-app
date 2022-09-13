@@ -8,6 +8,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "ms-products")
 public interface ProductClient {
     @GetMapping("/products/{code}")
-    //public List<ProductResponse> getProducts();
     public ProductResponse getProductByCode(@PathVariable("code") String code);
 }
