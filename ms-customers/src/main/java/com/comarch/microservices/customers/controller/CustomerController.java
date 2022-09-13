@@ -26,10 +26,10 @@ public class CustomerController {
     @PostMapping("/register")
     public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody CustomerRequest request){
 
-        customerService.addCustomer(request);
+        Long customerId = customerService.addCustomer(request);
         log.info("New customer with login '" + request.getEmail() +  "' was added");
 
-        return ResponseEntity.ok(new CustomerResponse(request.getFirstName(),request.getLastName(),
+        return ResponseEntity.ok(new CustomerResponse(customerId,request.getFirstName(),request.getLastName(),
                 request.getEmail(), Security.hashPassword(request.getPassword())));
     }
 
