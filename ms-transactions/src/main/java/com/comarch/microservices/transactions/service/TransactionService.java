@@ -22,14 +22,21 @@ public class TransactionService {
     private double getTransactionValue(List<String> productCodeList) {
         return productCodeList.stream().mapToDouble(x -> productClient.getProductByCode(x).getPrice()).sum();
     }
+    private boolean productsExist(List<String> transactionsProductCodes){
+      return transactionsProductCodes.stream().noneMatch(x -> productClient.getProductByCode(x) == null);
+    }
 
-    public void addTransaction(List<String> transactionProductCodes) {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
-        transaction.setDate(new Date());
-        transactionProductCodes.forEach(x -> transaction.addItem(new TransactionItems(productClient.getProductByCode(x).getId())));
+    public boolean addTransaction(List<String> transactionProductCodes) {
+        if(productsExist(transactionProductCodes)) {
+            Transaction transaction = new Transaction();
+            transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
+            transaction.setDate(new Date());
+            transactionProductCodes.forEach(x -> transaction.addItem(new TransactionItems(productClient.getProductByCode(x).getId())));
 
-        transactionRepository.save(transaction);
+            transactionRepository.save(transaction);
+            return true;
+        }
+        else{ return false;}
     }
 
     public List<TransactionResponse> getTransactions() {

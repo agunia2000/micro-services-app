@@ -16,11 +16,13 @@ public class TransactionController {
     private final TransactionService transactionService;
     @PostMapping("/transactions")
     public String addTransaction(@RequestBody TransactionRequest request){
-        transactionService.addTransaction(request.getProductCodeList());
+        request.getProductCodeList().replaceAll(String::toUpperCase);
 
-        return "Transaction Was Added!";
+        if(transactionService.addTransaction(request.getProductCodeList())){
+            return "Transaction Was Added!";
+        }
+        return "Error while creating transaction! One or more products are missing in stock.";
     }
-
     @GetMapping("/transactions")
     public List<TransactionResponse> getTransactions(){
         return transactionService.getTransactions();
