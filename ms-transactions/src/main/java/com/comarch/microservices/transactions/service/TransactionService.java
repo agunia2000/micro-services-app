@@ -5,7 +5,9 @@ import com.comarch.microservices.transactions.model.Transaction;
 import com.comarch.microservices.transactions.model.TransactionItems;
 import com.comarch.microservices.transactions.repository.TransactionRepository;
 import com.comarch.microservices.transactions.response.TransactionResponse;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final ProductClient productClient;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     private double getTransactionValue(List<String> productCodeList) {
         return productCodeList.stream().mapToDouble(x -> productClient.getProductByCode(x).getPrice()).sum();
@@ -62,5 +67,17 @@ public class TransactionService {
 
     public void deleteTransaction(Long id) {
         transactionRepository.deleteById(id);
+    }
+
+    public String getEmail(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        try {
+            return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + " => " + e);
+        }
+        return null;
     }
 }

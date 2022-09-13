@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.comarch.microservices.apigateway.client.CustomerClient;
 import com.comarch.microservices.apigateway.exception.JwtTokenMalformedException;
 import com.comarch.microservices.apigateway.exception.JwtTokenMissingException;
-import com.comarch.microservices.apigateway.response.CustomerResponse;
 import com.comarch.microservices.apigateway.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -27,8 +25,6 @@ import reactor.core.publisher.Mono;
 public class JwtAuthenticationFilter implements GatewayFilter {
 
     private final JwtUtil jwtUtil;
-
-    // private final CustomerClient customerClient; -> makes dependency cycle
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -51,16 +47,8 @@ public class JwtAuthenticationFilter implements GatewayFilter {
             if (token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
-
             try {
-               //  String email = jwtUtil.getClaims(token).getSubject();
-               // CustomerResponse customer = customerClient.getCustomerByEmail(email);
-               //  if (customer != null) {
                 jwtUtil.validateToken(token);
-                exchange.getResponse().getHeaders().put("email", Collections.singletonList(jwtUtil.getClaims(token).getSubject()));
-               // } else {
-               //     throw new JwtTokenMalformedException("User not found!");
-               // }
             } catch (JwtTokenMalformedException | JwtTokenMissingException e) {
                 e.printStackTrace();
 

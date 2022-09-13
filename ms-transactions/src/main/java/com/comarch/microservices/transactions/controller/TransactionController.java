@@ -15,13 +15,13 @@ import java.util.List;
 public class TransactionController {
     private final TransactionService transactionService;
     @PostMapping("/transactions")
-    public String addTransaction(@RequestBody TransactionRequest request){
+    public String addTransaction(@RequestHeader("Authorization") String token, @RequestBody TransactionRequest request){
         request.getProductCodeList().replaceAll(String::toUpperCase);
 
         if(transactionService.addTransaction(request.getProductCodeList())){
-            return "Transaction Was Added!";
+            return "Transaction was added for user" + transactionService.getEmail(token);
         }
-        return "Error while creating transaction! One or more products are missing in stock.";
+        return "Error while creating transaction! One or more products are missing in stock." + transactionService.getEmail(token);
     }
     @GetMapping("/transactions")
     public List<TransactionResponse> getTransactions(){
