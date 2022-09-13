@@ -25,14 +25,18 @@ public class TransactionService {
     private boolean productsExist(List<String> transactionsProductCodes){
       return transactionsProductCodes.stream().noneMatch(x -> productClient.getProductByCode(x) == null);
     }
+    private Transaction prepareTransaction(List<String> transactionProductCodes){
+        Transaction transaction = new Transaction();
+        transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
+        transaction.setDate(new Date());
+        transactionProductCodes.forEach(x -> transaction.addItem(new TransactionItems(productClient.getProductByCode(x).getId())));
+
+        return transaction;
+    }
 
     public boolean addTransaction(List<String> transactionProductCodes) {
         if(productsExist(transactionProductCodes)) {
-            Transaction transaction = new Transaction();
-            transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
-            transaction.setDate(new Date());
-            transactionProductCodes.forEach(x -> transaction.addItem(new TransactionItems(productClient.getProductByCode(x).getId())));
-
+            Transaction transaction = prepareTransaction(transactionProductCodes);
             transactionRepository.save(transaction);
             return true;
         }
