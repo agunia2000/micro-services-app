@@ -5,7 +5,6 @@ import com.comarch.microservices.apigateway.exception.JwtTokenMissingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -17,16 +16,6 @@ public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
-
-    public Claims getClaims(final String token) {
-        try {
-            Claims body = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
-            return body;
-        } catch (Exception e) {
-            System.out.println(e.getMessage() + " => " + e);
-        }
-        return null;
-    }
 
     public void validateToken(final String token) throws JwtTokenMalformedException, JwtTokenMissingException {
         try {

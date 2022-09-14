@@ -17,7 +17,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
-import io.jsonwebtoken.Claims;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -28,38 +27,32 @@ public class JwtAuthenticationFilter implements GatewayFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = (ServerHttpRequest) exchange.getRequest();
+        ServerHttpRequest request = exchange.getRequest();
 
         final List<String> apiEndpoints = Arrays.asList("/register", "/login");
 
-        Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
-                .noneMatch(uri -> r.getURI().getPath().equals(uri)); // org: contains instead of equals
+        Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream().noneMatch(uri -> r.getURI().getPath().equals(uri));
 
         if (isApiSecured.test(request)) {
             if (!request.getHeaders().containsKey("Authorization")) {
                 ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
-
+                response.setStatusCode(HttpStatus.FORBIDDEN);
                 return response.setComplete();
             }
 
             String token = request.getHeaders().getOrEmpty("Authorization").get(0);
+
             if (token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
+
             try {
                 jwtUtil.validateToken(token);
             } catch (JwtTokenMalformedException | JwtTokenMissingException e) {
-                e.printStackTrace();
-
                 ServerHttpResponse response = exchange.getResponse();
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
-
                 return response.setComplete();
             }
-
-            Claims claims = jwtUtil.getClaims(token);
-            exchange.getRequest().mutate().header("email", String.valueOf(claims.get("email"))).build();
         }
 
         return chain.filter(exchange);
