@@ -29,33 +29,33 @@ public class CustomerController {
         Long customerId = customerService.addCustomer(request);
         log.info("New customer with login '" + request.getEmail() +  "' was added");
 
-        return ResponseEntity.ok(new CustomerResponse(customerId,request.getFirstName(),request.getLastName(),
-                request.getEmail(), Security.hashPassword(request.getPassword())));
+        return new ResponseEntity<>(new CustomerResponse(customerId,request.getFirstName(),request.getLastName(),
+                request.getEmail(), Security.hashPassword(request.getPassword())), HttpStatus.CREATED);
     }
 
     @GetMapping("/customers")
     public ResponseEntity<List<Customer>> getCustomers(){
-        return ResponseEntity.ok(customerService.getCustomers());
+        return new ResponseEntity<>(customerService.getCustomers(),HttpStatus.OK);
     }
 
     @DeleteMapping("/customers/{id}")
-    public String deleteCustomer(@PathVariable("id") Long customerId){
+    public ResponseEntity<String> deleteCustomer(@PathVariable("id") Long customerId){
         customerService.deleteCustomer(customerId);
-        return "Successfully Deleted Customer with id: " + customerId;
+        return new ResponseEntity<>("Successfully Deleted Customer with id: " + customerId, HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> verifyLoginData(@RequestBody LoginRequest request){
         if(customerService.customerDataCorrect(request.getEmail(), request.getPassword())){
             String token = jwtUtil.generateToken(request.getEmail());
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            return new ResponseEntity<>(token, HttpStatus.CREATED);
 
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/customers/{email}")
-    public Customer getCustomerByEmail(@PathVariable("email") String email){
-        return customerService.getCustomerByEmail(email);
+    public ResponseEntity<Customer> getCustomerByEmail(@PathVariable("email") String email){
+        return new ResponseEntity<>(customerService.getCustomerByEmail(email),HttpStatus.OK);
     }
 }

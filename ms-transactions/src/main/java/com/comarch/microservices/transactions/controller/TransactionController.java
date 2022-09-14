@@ -5,6 +5,8 @@ import com.comarch.microservices.transactions.response.TransactionResponse;
 import com.comarch.microservices.transactions.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,24 +17,21 @@ import java.util.List;
 public class TransactionController {
     private final TransactionService transactionService;
     @PostMapping("/transactions")
-    public String addTransaction(@RequestHeader("Authorization") String token, @RequestBody TransactionRequest request){
+    public ResponseEntity<TransactionResponse> addTransaction(@RequestHeader("Authorization") String token, @RequestBody TransactionRequest request){
         request.getProductCodeList().replaceAll(String::toUpperCase);
+        transactionService.addTransaction(request.getProductCodeList(),transactionService.getEmail(token));
 
-        if(transactionService.addTransaction(request.getProductCodeList())){
-            return "Transaction was added for user" + transactionService.getEmail(token);
-        }
-        return "Error while creating transaction! One or more products are missing in stock." + transactionService.getEmail(token);
+        return new ResponseEntity<>(transactionService.getLatestTransactionResponse(), HttpStatus.CREATED);
     }
     @GetMapping("/transactions")
-    public List<TransactionResponse> getTransactions(){
-        return transactionService.getTransactions();
+    public ResponseEntity<List<TransactionResponse>> getTransactions(){
+        return new ResponseEntity<>(transactionService.getTransactions(),HttpStatus.OK);
     }
 
     @DeleteMapping("/transactions/{id}")
-    public String deleteTransaction(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteTransaction(@PathVariable("id") Long id){
         transactionService.deleteTransaction(id);
-
-        return "Transaction With Id " + id + " Was Successfully Deleted";
+        return new ResponseEntity<>("Transaction With Id " + id + " Was Successfully Deleted",HttpStatus.OK);
     }
 
 }

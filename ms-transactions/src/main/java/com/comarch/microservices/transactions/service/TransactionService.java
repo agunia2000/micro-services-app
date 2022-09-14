@@ -1,5 +1,6 @@
 package com.comarch.microservices.transactions.service;
 
+import com.comarch.microservices.transactions.clients.CustomerClient;
 import com.comarch.microservices.transactions.clients.ProductClient;
 import com.comarch.microservices.transactions.model.Transaction;
 import com.comarch.microservices.transactions.model.TransactionItems;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final ProductClient productClient;
+    private final CustomerClient customerClient;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -30,8 +32,9 @@ public class TransactionService {
     private boolean productsExist(List<String> transactionsProductCodes){
       return transactionsProductCodes.stream().noneMatch(x -> productClient.getProductByCode(x) == null);
     }
-    private Transaction prepareTransaction(List<String> transactionProductCodes){
+    private Transaction prepareTransaction(List<String> transactionProductCodes,String email){
         Transaction transaction = new Transaction();
+        transaction.setCustomerId(customerClient.getCustomerByEmail(email).getId());
         transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
         transaction.setDate(new Date());
         transactionProductCodes.forEach(x -> transaction.addItem(new TransactionItems(productClient.getProductByCode(x).getId())));
@@ -39,13 +42,23 @@ public class TransactionService {
         return transaction;
     }
 
-    public boolean addTransaction(List<String> transactionProductCodes) {
+    public void addTransaction(List<String> transactionProductCodes, String email) {
         if(productsExist(transactionProductCodes)) {
-            Transaction transaction = prepareTransaction(transactionProductCodes);
+            Transaction transaction = prepareTransaction(transactionProductCodes,email);
             transactionRepository.save(transaction);
-            return true;
         }
-        else{ return false;}
+    }
+
+    public TransactionResponse getLatestTransactionResponse(){
+        Transaction latestTransaction = transactionRepository.findTopByOrderByDateDesc();
+
+        return TransactionResponse.builder()
+                .transactionId(latestTransaction.getId())
+                .customerId(latestTransaction.getCustomerId())
+                .transactionDate(latestTransaction.getDate())
+                .transactionValue(latestTransaction.getTransactionValue())
+                .productsId(latestTransaction.getTransactionItems().stream().mapToLong(TransactionItems::getProductId).boxed().collect(Collectors.toList()))
+                .build();
     }
 
     public List<TransactionResponse> getTransactions() {
