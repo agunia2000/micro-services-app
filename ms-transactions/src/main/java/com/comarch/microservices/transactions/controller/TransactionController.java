@@ -19,9 +19,8 @@ public class TransactionController {
     @PostMapping("/transactions")
     public ResponseEntity<TransactionResponse> addTransaction(@RequestHeader("Authorization") String token, @RequestBody TransactionRequest request){
         request.getProductCodeList().replaceAll(String::toUpperCase);
-        transactionService.addTransaction(request.getProductCodeList(),transactionService.getEmail(token));
 
-        return new ResponseEntity<>(transactionService.getLatestTransactionResponse(), HttpStatus.CREATED);
+        return new ResponseEntity<>(transactionService.addTransaction(request.getProductCodeList(),transactionService.getEmail(token)), HttpStatus.CREATED);
     }
     @GetMapping("/transactions")
     public ResponseEntity<List<TransactionResponse>> getTransactions(){

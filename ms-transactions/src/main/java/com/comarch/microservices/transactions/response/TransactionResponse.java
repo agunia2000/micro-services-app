@@ -1,9 +1,6 @@
 package com.comarch.microservices.transactions.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -14,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 public class TransactionResponse {
     long transactionId;
     long customerId;

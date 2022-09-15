@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends CrudRepository <Transaction, Long>{
     List<Transaction> findAll();
-    Transaction findTopByOrderByDateDesc();
 }

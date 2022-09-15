@@ -29,10 +29,12 @@ public class TransactionService {
     private double getTransactionValue(List<String> productCodeList) {
         return productCodeList.stream().mapToDouble(x -> productClient.getProductByCode(x).getPrice()).sum();
     }
-    private boolean productsExist(List<String> transactionsProductCodes){
-      return transactionsProductCodes.stream().noneMatch(x -> productClient.getProductByCode(x) == null);
+
+    private boolean productsExist(List<String> transactionsProductCodes) {
+        return transactionsProductCodes.stream().noneMatch(x -> productClient.getProductByCode(x) == null);
     }
-    private Transaction prepareTransaction(List<String> transactionProductCodes,String email){
+
+    private Transaction prepareTransaction(List<String> transactionProductCodes, String email) {
         Transaction transaction = new Transaction();
         transaction.setCustomerId(customerClient.getCustomerByEmail(email).getId());
         transaction.setTransactionValue(getTransactionValue(transactionProductCodes));
@@ -42,23 +44,24 @@ public class TransactionService {
         return transaction;
     }
 
-    public void addTransaction(List<String> transactionProductCodes, String email) {
-        if(productsExist(transactionProductCodes)) {
-            Transaction transaction = prepareTransaction(transactionProductCodes,email);
-            transactionRepository.save(transaction);
-        }
+    private TransactionResponse mapTransactionResponseBody(Transaction transaction) {
+        return TransactionResponse.builder()
+                .transactionId(transaction.getId())
+                .customerId(transaction.getCustomerId())
+                .transactionDate(transaction.getDate())
+                .transactionValue(transaction.getTransactionValue())
+                .productsId(transaction.getTransactionItems().stream().mapToLong(TransactionItems::getProductId).boxed().collect(Collectors.toList()))
+                .build();
     }
 
-    public TransactionResponse getLatestTransactionResponse(){
-        Transaction latestTransaction = transactionRepository.findTopByOrderByDateDesc();
 
-        return TransactionResponse.builder()
-                .transactionId(latestTransaction.getId())
-                .customerId(latestTransaction.getCustomerId())
-                .transactionDate(latestTransaction.getDate())
-                .transactionValue(latestTransaction.getTransactionValue())
-                .productsId(latestTransaction.getTransactionItems().stream().mapToLong(TransactionItems::getProductId).boxed().collect(Collectors.toList()))
-                .build();
+    public TransactionResponse addTransaction(List<String> transactionProductCodes, String email) {
+        if (productsExist(transactionProductCodes)) {
+            Transaction transaction = prepareTransaction(transactionProductCodes, email);
+            transactionRepository.save(transaction);
+            return mapTransactionResponseBody(transaction);
+        }
+        return new TransactionResponse();
     }
 
     public List<TransactionResponse> getTransactions() {
